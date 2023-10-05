@@ -82,7 +82,7 @@ def main():
 
     # # sidebar with user input
 
-    user_input = st.text_input("Your message: ", key="user_input")
+    user_input = st.text_input("Type Your query here and Press Enter button: ", key="user_input")
 
     # handle user input
     if user_input:      
