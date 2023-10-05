@@ -13,25 +13,28 @@ from webscraping import Extract_text_From_Url
 from tokenize_truncate import convert_tokens_to_text
 from langchain.llms import HuggingFaceHub
 from pyngrok import ngrok
+from ddg_search import search_results
 import os
 
 
-def get_pdf_text(url):
-    text = ""
-    text=Extract_text_From_Url(url)
-    text=convert_tokens_to_text(text)
-    # for pdf in pdf_docs:
-    #     pdf_reader = PdfReader(pdf)
-    #     for page in pdf_reader.pages:
-    #         text += page.extract_text()
-    return text
+# def get_pdf_text(url):
+#     text = ""
+#     text=Extract_text_From_Url(url)
+#     text=convert_tokens_to_text(text)
+#     # for pdf in pdf_docs:
+#     #     pdf_reader = PdfReader(pdf)
+#     #     for page in pdf_reader.pages:
+#     #         text += page.extract_text()
+#     return text
 
 
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
         separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
+        #chunk_size=1000,
+        chunk_size=500,
+        #chunk_overlap=200,
+        chunk_overlap=100,
         length_function=len
     )
     chunks = text_splitter.split_text(text)
@@ -86,27 +89,28 @@ def main():
     st.header("Customer Support ChatBot :books:")
     user_question = st.text_input("Ask your question about this website:")
     if user_question:
-        handle_userinput(user_question)
+        with st.spinner("Processing..."):
+            #handle_userinput(user_question)
 
-    with st.sidebar:
-        st.subheader("Your documents")
-        url=st.text_input("Enter Website Url for making Real Time DataSet:")
-        # pdf_docs = st.file_uploader(
-        #     "Upload your PDFs here and click on 'Process'", accept_multiple_files=True,type='pdf')
-        if st.button("Process"):
-            with st.spinner("Processing..."):
-                # get pdf text
-                raw_text = get_pdf_text(url)
-                st.write(raw_text)
-                # get the text chunks
-                text_chunks = get_text_chunks(raw_text)
-                st.write(text_chunks)
-                # create vector store
-                vectorstore = get_vectorstore(text_chunks)
-                st.write(vectorstore)
-                # create conversation chain
-                st.session_state.conversation = get_conversation_chain(vectorstore)
-
+    # with st.sidebar:
+    #     st.subheader("Your documents")
+    #     url=st.text_input("Enter Website Url for making Real Time DataSet:")
+    #     # pdf_docs = st.file_uploader(
+    #     #     "Upload your PDFs here and click on 'Process'", accept_multiple_files=True,type='pdf')
+    #     if st.button("Process"):
+    #         with st.spinner("Processing..."):
+    #             # get pdf text
+            raw_text = search_results(user_question)
+            #st.write(raw_text)
+            # get the text chunks
+            text_chunks = get_text_chunks(raw_text)
+            #st.write(text_chunks)
+            # create vector store
+            vectorstore = get_vectorstore(text_chunks)
+            #st.write(vectorstore)
+            # create conversation chain
+            st.session_state.conversation = get_conversation_chain(vectorstore)
+            handle_userinput(user_question)
 
 if __name__ == '__main__':
     main()

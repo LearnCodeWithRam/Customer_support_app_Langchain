@@ -9,6 +9,7 @@ tiktoken
 pyngrok
 InstructorEmbedding
 sentence_transformers
+duckduckgo_search
 # uncomment to use huggingface llms
 # huggingface-hub==0.14.1
 
